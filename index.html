@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GestAG · Frota</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--g:#367C2B;--gd:#1B4A1E;--gs:#E7F0E4;--y:#FFDE00;--ink:#1A1C1E;--soft:#4B5563;--line:#E2E7E0;--bg:#F6F8F4}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
+header{background:var(--gd);color:#fff;padding:16px 28px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.mark{width:42px;height:42px;border-radius:9px;background:var(--y);color:var(--gd);display:grid;place-items:center;font-family:Archivo;font-weight:800;font-size:20px}
+#logo{height:42px;max-width:180px;object-fit:contain;display:none}
+h1{font-family:Archivo;font-size:20px;margin:0}header small{display:block;color:#9DBE97;font-size:12px}
+.filters{margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+select,input{padding:8px 11px;border-radius:9px;border:1px solid var(--line);font-family:inherit;font-size:13px}
+label.chk{font-size:12.5px;display:flex;gap:6px;align-items:center;color:#CDE3C8}
+.user{font-size:12.5px;color:#CDE3C8;display:flex;gap:8px;align-items:center}
+.user button{background:none;border:1px solid #5d8a57;color:#fff;border-radius:8px;padding:6px 10px;cursor:pointer;font-family:inherit;font-size:12px}
+main{padding:22px 28px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:18px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;position:relative;overflow:hidden}
+.kpi:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--g)}
+.kpi.y:before{background:var(--y)}
+.kl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--soft)}
+.kv{font-family:Archivo;font-weight:800;font-size:30px;margin-top:6px}
+.sec{font-family:Archivo;font-size:15px;margin:6px 0 10px;display:flex;align-items:center;gap:10px}
+.sec .clr{font-family:Inter;font-size:12px;color:var(--g);cursor:pointer;font-weight:600;display:none}
+.tipos{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+.tcard{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;transition:.15s}
+.tcard:hover{border-color:var(--g)}.tcard.sel{background:var(--g);color:#fff;border-color:var(--g)}
+.tcard .ic{font-size:20px}.tcard .tn{font-size:12.5px;font-weight:600;margin-top:4px}
+.tcard .tc{font-family:Archivo;font-weight:800;font-size:22px}.tcard .tg{font-size:10px;text-transform:uppercase;letter-spacing:.04em;opacity:.7}
+.grid{display:grid;grid-template-columns:5fr 7fr;gap:16px;margin-bottom:18px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px}
+.card h3{font-family:Archivo;font-size:14px;margin:0 0 12px}
+.box{position:relative;height:320px}
+.tw{max-height:480px;overflow:auto;border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{position:sticky;top:0;background:#fff;font-size:10.5px;text-transform:uppercase;color:var(--soft);cursor:pointer}
+tbody tr:hover{background:var(--gs)}
+.tag{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:6px}.on{background:var(--gs);color:var(--g)}.off{background:#eee;color:#888}
+.src{font-size:11.5px;color:var(--soft);margin-top:14px}
+/* tela de login */
+#login{display:none;min-height:100vh;align-items:center;justify-content:center;background:linear-gradient(150deg,#367C2B,#1B4A1E)}
+.lbox{background:#fff;border-radius:18px;padding:40px 36px;width:min(420px,92vw);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.lbox .mark{margin:0 auto 14px;width:56px;height:56px;font-size:26px}
+.lbox h2{font-family:Archivo;color:var(--gd);margin:0 0 6px;font-size:24px}
+.lbox p{color:var(--soft);font-size:13.5px;line-height:1.5;margin:0 0 24px}
+.btnjd{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px;border:none;border-radius:10px;background:var(--g);color:#fff;font-weight:700;font-size:15px;cursor:pointer;text-decoration:none;font-family:inherit}
+.btnjd:hover{background:var(--gd)}
+.btnjd .dy{width:22px;height:22px;border-radius:5px;background:var(--y);color:var(--gd);display:grid;place-items:center;font-weight:800;font-size:13px}
+.lerr{color:#C0392B;font-size:12.5px;margin-top:14px;min-height:16px}
+#app{display:none}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<section id="login">
+  <div class="lbox">
+    <div class="mark">G</div>
+    <h2>GestAG</h2>
+    <p>Gestão da sua frota John Deere.<br>Entre com a mesma conta do <b>Operations Center</b>.</p>
+    <a class="btnjd" id="btnLogin"><span class="dy">JD</span> Entrar com John Deere</a>
+    <div class="lerr" id="lerr"></div>
+  </div>
+</section>
+
+<!-- PAINEL -->
+<div id="app">
+<header>
+  <img id="logo" src="logo.png" alt="logo" onload="this.style.display='block';document.getElementById('mark').style.display='none'">
+  <div class="mark" id="mark">G</div>
+  <div><h1>GestAG · Frota</h1><small>Dados reais do John Deere Operations Center</small></div>
+  <div class="filters">
+    <select id="fOrg"><option value="">Todas as organizações</option></select>
+    <select id="fTipo"><option value="">Todos os tipos</option></select>
+    <label class="chk"><input type="checkbox" id="fArq"> incluir arquivadas</label>
+    <div class="user"><span id="uNome"></span><button id="btnSair">Sair</button></div>
+  </div>
+</header>
+<main>
+  <section class="kpis" id="kpis"></section>
+  <div class="sec">Frota por tipo <span class="clr" id="clrTipo">✕ limpar seleção</span></div>
+  <section class="tipos" id="tipos"></section>
+  <section class="grid">
+    <div class="card"><h3>Composição da frota</h3><div class="box"><canvas id="chTipo"></canvas></div></div>
+    <div class="card"><h3>Máquinas por organização</h3><div class="box"><canvas id="chOrg"></canvas></div></div>
+  </section>
+  <section class="card">
+    <h3>Máquinas</h3>
+    <input id="q" placeholder="Buscar nome, modelo, série…" style="width:320px;margin-bottom:10px">
+    <div class="tw"><table><thead><tr>
+      <th data-k="name">Máquina</th><th data-k="tipo">Tipo</th><th data-k="grupo">Grupo</th><th data-k="make">Marca</th><th data-k="model">Modelo</th>
+      <th data-k="year">Ano</th><th data-k="serial">Série</th><th data-k="org">Organização</th><th data-k="archived">Status</th>
+    </tr></thead><tbody id="tb"></tbody></table></div>
+    <div class="src" id="src"></div>
+  </section>
+</main>
+</div>
+
+<script>
+const FN = "https://znhbjdkdarcrhqfcfzxq.supabase.co/functions/v1/jd";
+const TIPOS={
+ "Tractor":["Trator","🚜","M"],"Combine":["Colheitadeira","🌾","M"],"Sprayer":["Pulverizador","💧","M"],
+ "Cotton Harvester":["Colhedora de Algodão","☁️","M"],"Utility Vehicle":["Veículo Utilitário","🚙","M"],
+ "Forage Harvester":["Forrageira","🌿","M"],"Motor Grader":["Motoniveladora","🛣️","M"],"Loader":["Carregador Frontal","🏗️","I"],
+ "Planter":["Plantadeira","🌱","I"],"Disk":["Grade","⚙️","I"],"Platform Head":["Plataforma de Corte","🔪","I"],
+ "Draper Head":["Plataforma Draper","🔪","I"],"Corn Head":["Plataforma de Milho","🌽","I"],"Cotton Head":["Unidade de Algodão","☁️","I"],
+ "Dry Spreader":["Distribuidor","🧂","I"],"Boom (Application)":["Barra de Aplicação","💧","I"],"Trailer":["Reboque","🛻","I"],
+ "Saw":["Serra","🪚","I"],"Blower":["Soprador","🌬️","I"],"Seeder":["Semeadora","🌱","I"],"Air Seeder":["Semeadora a Ar","🌱","I"],
+ "Air Cart":["Carrinho de Sementes","🌱","I"],"Baler":["Enfardadora","📦","I"],"Square Baler":["Enfardadora Quadrada","📦","I"],
+ "Mower":["Roçadeira","✂️","I"],"Grain Cart":["Carreta Graneleira","🌾","I"],"Ripper":["Subsolador","⛏️","I"],
+ "Roller":["Rolo","🛞","I"],"Chipper":["Picador","🪵","I"],"Other":["Outros","🔧","I"]
+};
+const tr=t=>TIPOS[t]||[t,"🔧","I"];
+const PAL=["#367C2B","#7AB55C","#FFDE00","#1B4A1E","#A7CE96","#E3B600","#4F8F3F","#C8D7C2","#2F6FB0","#E8912B","#8FB3D9","#C0784A"];
+let ALL=[],charts={},sortK="tipo",sortD=1;
+const fmt=n=>Number(n).toLocaleString("pt-BR");
+const $=id=>document.getElementById(id);
+
+/* ---------- sessão ---------- */
+function getToken(){
+  const m=location.hash.match(/t=([^&]+)/);
+  if(m){ sessionStorage.setItem("gestag_t",m[1]); history.replaceState(null,"",location.pathname); }
+  return sessionStorage.getItem("gestag_t");
+}
+function showLogin(msg){ $("app").style.display="none"; $("login").style.display="flex"; $("lerr").textContent=msg||""; }
+$("btnLogin").href=FN+"/login";
+$("btnSair").onclick=()=>{ sessionStorage.removeItem("gestag_t"); showLogin("Você saiu."); };
+
+async function start(){
+  const t=getToken();
+  if(!t) return showLogin();
+  try{
+    const r=await fetch(FN+"/frota",{headers:{"x-gestag-token":t}});
+    if(r.status===401){ sessionStorage.removeItem("gestag_t"); return showLogin("Sessão expirada. Entre novamente."); }
+    const j=await r.json();
+    $("login").style.display="none"; $("app").style.display="block";
+    $("uNome").textContent=j.nome||"";
+    if(!j.orgs||!j.orgs.length){ $("kpis").innerHTML=`<div class="card">Nenhuma organização liberada para o GestAG nesta conta. Conecte sua organização em <b>connections.deere.com</b>.</div>`; return; }
+    j.orgs.forEach(o=>(o.maquinas||[]).forEach(m=>{ const [pt,ic,g]=tr(m.tipo);
+      ALL.push({name:m.nome,type:m.tipo,tipo:pt,icone:ic,grupo:g==="M"?"Máquina":"Implemento",make:m.marca||"",model:m.modelo||"",
+        year:m.ano||"",serial:m.numero_serie||"",archived:!!m.arquivada,org:o.nome}); }));
+    [...new Set(ALL.map(m=>m.org))].sort().forEach(v=>$("fOrg").add(new Option(v,v)));
+    [...new Set(ALL.map(m=>m.tipo))].sort().forEach(v=>$("fTipo").add(new Option(v,v)));
+    $("src").textContent="Consultado em "+new Date(j.geradoEm).toLocaleString("pt-BR")+" · fonte: Supabase ← API John Deere";
+    render();
+  }catch(e){ showLogin("Erro ao carregar: "+e.message); }
+}
+
+/* ---------- painel ---------- */
+function mk(id,cfg){if(charts[id])charts[id].destroy();charts[id]=new Chart($(id),cfg);}
+function cnt(arr,k){const o={};arr.forEach(m=>o[m[k]]=(o[m[k]]||0)+1);return Object.entries(o).sort((a,b)=>b[1]-a[1]);}
+function base(){
+  const org=$("fOrg").value,arq=$("fArq").checked,q=$("q").value.toLowerCase();
+  return ALL.filter(m=>(arq||!m.archived)&&(!org||m.org===org)&&(!q||[m.name,m.model,m.serial,m.org,m.tipo].join(" ").toLowerCase().includes(q)));
+}
+function render(){
+  const b=base(), tp=$("fTipo").value, d=tp?b.filter(m=>m.tipo===tp):b;
+  const ativos=d.filter(m=>!m.archived).length;
+  $("kpis").innerHTML=[
+    ["Total",d.length,""],["Ativas",ativos,""],["Autopropelidas",d.filter(m=>m.grupo==="Máquina").length,"y"],
+    ["Implementos",d.filter(m=>m.grupo==="Implemento").length,"y"],["Organizações",new Set(d.map(m=>m.org)).size,""]
+  ].map(([l,v,c])=>`<div class="kpi ${c}"><div class="kl">${l}</div><div class="kv">${fmt(v)}</div></div>`).join("");
+  const grp=t=>(ALL.find(m=>m.tipo===t)||{}).grupo;
+  const ct=cnt(b,"tipo").sort((x,y)=>grp(x[0])===grp(y[0])?y[1]-x[1]:(grp(x[0])==="Máquina"?-1:1));
+  $("tipos").innerHTML=ct.map(([t,n])=>{const m=ALL.find(x=>x.tipo===t);
+    return `<div class="tcard ${tp===t?"sel":""}" data-t="${t}"><div class="ic">${m.icone}</div><div class="tc">${n}</div><div class="tn">${t}</div><div class="tg">${m.grupo}</div></div>`;}).join("")
+    ||`<div style="color:#888">Nenhuma máquina.</div>`;
+  document.querySelectorAll(".tcard").forEach(c=>c.onclick=()=>{$("fTipo").value=$("fTipo").value===c.dataset.t?"":c.dataset.t;render();});
+  $("clrTipo").style.display=tp?"inline":"none";
+  const t=cnt(d,"tipo");
+  mk("chTipo",{type:"doughnut",data:{labels:t.map(x=>x[0]),datasets:[{data:t.map(x=>x[1]),backgroundColor:PAL,borderColor:"#fff",borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:"55%",plugins:{legend:{position:"right"}},
+      onClick:(e,els)=>{if(els.length){$("fTipo").value=t[els[0].index][0];render();}}}});
+  const o=cnt(d,"org");
+  mk("chOrg",{type:"bar",data:{labels:o.map(x=>x[0]),datasets:[{data:o.map(x=>x[1]),backgroundColor:"#367C2B",maxBarThickness:46}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:"y",plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false},ticks:{precision:0}},y:{grid:{display:false}}}}});
+  const rows=[...d].sort((a,b)=>String(a[sortK]).localeCompare(String(b[sortK]),"pt-BR",{numeric:true})*sortD);
+  $("tb").innerHTML=rows.map(m=>`<tr><td><b>${m.name}</b></td><td>${m.icone} ${m.tipo}</td><td>${m.grupo}</td><td>${m.make||"—"}</td><td>${m.model||"—"}</td>
+    <td>${m.year||"—"}</td><td>${m.serial||"—"}</td><td>${m.org}</td>
+    <td><span class="tag ${m.archived?"off":"on"}">${m.archived?"Arquivada":"Ativa"}</span></td></tr>`).join("")
+    ||`<tr><td colspan="9" style="text-align:center;color:#888;padding:30px">Nenhuma máquina.</td></tr>`;
+}
+["fOrg","fTipo","fArq","q"].forEach(id=>$(id).addEventListener("input",render));
+$("clrTipo").onclick=()=>{$("fTipo").value="";render();};
+document.querySelectorAll("th[data-k]").forEach(th=>th.addEventListener("click",()=>{sortD=sortK===th.dataset.k?-sortD:1;sortK=th.dataset.k;render();}));
+start();
+</script>
+</body>
+</html>
