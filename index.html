@@ -1,62 +1,163 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GestAG · Frota</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GestAG · Frota John Deere</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--g:#367C2B;--gd:#1B4A1E;--gs:#E7F0E4;--y:#FFDE00;--ink:#1A1C1E;--soft:#4B5563;--line:#E2E7E0;--bg:#F6F8F4}
-*{box-sizing:border-box}body{margin:0;font-family:Inter,sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
-header{background:var(--gd);color:#fff;padding:16px 28px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.mark{width:42px;height:42px;border-radius:9px;background:var(--y);color:var(--gd);display:grid;place-items:center;font-family:Archivo;font-weight:800;font-size:20px}
-#logo{height:42px;max-width:180px;object-fit:contain;display:none}
-h1{font-family:Archivo;font-size:20px;margin:0}header small{display:block;color:#9DBE97;font-size:12px}
-.filters{margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-select,input{padding:8px 11px;border-radius:9px;border:1px solid var(--line);font-family:inherit;font-size:13px}
-label.chk{font-size:12.5px;display:flex;gap:6px;align-items:center;color:#CDE3C8}
-.user{font-size:12.5px;color:#CDE3C8;display:flex;gap:8px;align-items:center}
-.user button{background:none;border:1px solid #5d8a57;color:#fff;border-radius:8px;padding:6px 10px;cursor:pointer;font-family:inherit;font-size:12px}
-main{padding:22px 28px}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:18px}
-.kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;position:relative;overflow:hidden}
-.kpi:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--g)}
-.kpi.y:before{background:var(--y)}
-.kl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--soft)}
-.kv{font-family:Archivo;font-weight:800;font-size:30px;margin-top:6px}
-.sec{font-family:Archivo;font-size:15px;margin:6px 0 10px;display:flex;align-items:center;gap:10px}
-.sec .clr{font-family:Inter;font-size:12px;color:var(--g);cursor:pointer;font-weight:600;display:none}
-.tipos{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:18px}
-.tcard{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;transition:.15s}
-.tcard:hover{border-color:var(--g)}.tcard.sel{background:var(--g);color:#fff;border-color:var(--g)}
-.tcard .ic{font-size:20px}.tcard .tn{font-size:12.5px;font-weight:600;margin-top:4px}
-.tcard .tc{font-family:Archivo;font-weight:800;font-size:22px}.tcard .tg{font-size:10px;text-transform:uppercase;letter-spacing:.04em;opacity:.7}
-.grid{display:grid;grid-template-columns:5fr 7fr;gap:16px;margin-bottom:18px}
-.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px}
-.card h3{font-family:Archivo;font-size:14px;margin:0 0 12px}
-.box{position:relative;height:320px}
-.tw{max-height:480px;overflow:auto;border:1px solid var(--line);border-radius:12px}
-table{width:100%;border-collapse:collapse;font-size:12.5px}
+:root{
+  --jd-green:#367C2B; --jd-green-deep:#1B4A1E; --jd-green-soft:#E7F0E4;
+  --jd-yellow:#FFDE00; --jd-yellow-deep:#E3B600;
+  --ink:#1A1C1E; --ink-soft:#4B5563; --line:#E2E7E0;
+  --surface:#FFFFFF; --surface-2:#F6F8F4;
+  --radius:14px; --shadow:0 1px 2px rgba(20,32,26,.05),0 8px 24px rgba(20,32,26,.06); --gap:18px;
+}
+*{box-sizing:border-box} html,body{margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--surface-2);color:var(--ink);font-size:14px;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'Archivo',sans-serif;margin:0;letter-spacing:-.01em}
+.num{font-variant-numeric:tabular-nums}
+
+.app{display:none;grid-template-columns:262px 1fr;min-height:100vh}
+.app.on{display:grid}
+.sidebar{background:var(--jd-green-deep);color:#EAF3E7;padding:22px 16px;position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:11px;margin:0 4px 18px}
+.brand .mark{width:38px;height:38px;border-radius:9px;flex:0 0 auto;background:var(--jd-yellow);display:grid;place-items:center;color:var(--jd-green-deep);font-family:'Archivo';font-weight:800;font-size:19px}
+.brand h1{font-size:15px;color:#fff;line-height:1.15}
+.brand small{display:block;color:#9DBE97;font-weight:500;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;margin-top:2px}
+#brandLogo{display:none;max-width:210px;max-height:60px;object-fit:contain}
+nav{display:flex;flex-direction:column;gap:3px;margin-bottom:18px}
+nav button{display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:none;border:none;color:#CDE3C8;font-family:inherit;font-size:13.5px;font-weight:500;padding:11px 12px;border-radius:9px;cursor:pointer;transition:.15s}
+nav button .ic{width:20px;text-align:center;font-size:15px}
+nav button:hover{background:rgba(255,255,255,.07);color:#fff}
+nav button.active{background:var(--jd-yellow);color:var(--jd-green-deep);font-weight:700}
+nav .soon{margin-left:auto;font-size:9px;font-weight:700;background:rgba(255,255,255,.12);color:#CDE3C8;padding:2px 6px;border-radius:5px;letter-spacing:.04em}
+nav button.active .soon{background:rgba(27,74,30,.15);color:var(--jd-green-deep)}
+.src-pill{display:inline-flex;align-items:center;gap:7px;margin:0 4px 12px;font-size:10.5px;font-weight:600;background:rgba(255,255,255,.08);border-radius:999px;padding:6px 11px;color:#CDE3C8}
+.dot{width:8px;height:8px;border-radius:50%;background:#5BD16E;box-shadow:0 0 0 3px rgba(91,209,110,.25)}
+.user-box{margin:0 4px 12px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.06);font-size:12px;color:#CDE3C8;line-height:1.4}
+.user-box b{display:block;color:#fff;font-size:13px}
+.user-box button{margin-top:8px;background:none;border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:7px;padding:5px 10px;cursor:pointer;font-family:inherit;font-size:11.5px}
+.user-box button:hover{border-color:var(--jd-yellow)}
+.sidebar-foot{margin-top:auto;padding:14px 4px 0;border-top:1px solid rgba(255,255,255,.1);font-size:10.5px;color:#88A883;line-height:1.5}
+
+.main{padding:0 0 48px;min-width:0}
+.topbar{position:sticky;top:0;z-index:20;background:rgba(246,248,244,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:16px 28px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.topbar h2{font-size:21px;font-weight:800}
+.topbar .crumb{font-size:12px;color:var(--ink-soft);margin-top:2px}
+.filters{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.ms{position:relative}
+.ms-btn{padding:8px 12px;border-radius:9px;border:1px solid var(--line);background:#fff;font-family:inherit;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;min-width:120px;text-align:left;white-space:nowrap}
+.ms-btn:hover{border-color:var(--jd-green)}
+.ms-btn.has-sel{border-color:var(--jd-green);background:var(--jd-green-soft)}
+.ms-pop{display:none;position:absolute;z-index:50;top:calc(100% + 4px);left:0;min-width:230px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);padding:6px}
+.ms.open .ms-pop{display:block}
+.ms-opt{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:7px;font-size:13px;cursor:pointer}
+.ms-opt:hover{background:var(--jd-green-soft)}
+.ms-opt input{accent-color:var(--jd-green)}
+.ms-search{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:7px;font-family:inherit;font-size:12.5px;margin-bottom:5px}
+.ms-list{max-height:250px;overflow:auto}
+.ms-foot{display:flex;gap:6px;border-top:1px solid var(--line);margin-top:4px;padding-top:5px}
+.ms-foot button{flex:1;text-align:center;font-size:11.5px;color:var(--jd-green);background:none;border:none;padding:5px;cursor:pointer;font-family:inherit;font-weight:600;border-radius:6px}
+.ms-foot button:hover{background:var(--jd-green-soft)}
+.chk{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--ink-soft);padding:0 4px;cursor:pointer}
+.chk input{accent-color:var(--jd-green)}
+.btn-print{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--jd-green);background:#fff;color:var(--jd-green);font-family:inherit;font-weight:600;font-size:12.5px;padding:7px 13px;border-radius:9px;cursor:pointer}
+.btn-print:hover{background:var(--jd-green);color:#fff}
+
+.page{padding:24px 28px;display:none}
+.page.active{display:block}
+.hero-wrap{position:relative;border-radius:12px;overflow:hidden;margin-bottom:var(--gap);min-height:110px;background:linear-gradient(110deg,var(--jd-green-deep),var(--jd-green))}
+.hero-wrap img{width:100%;height:180px;object-fit:cover;display:none}
+.hero-wrap .hero-cap{position:absolute;left:22px;bottom:18px;color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.45)}
+.hero-wrap .hero-cap h2{font-size:24px;font-weight:800}
+.hero-wrap .hero-cap span{font-size:12.5px;opacity:.92}
+.hero-wrap:after{content:"";position:absolute;right:0;top:0;width:8px;height:100%;background:var(--jd-yellow)}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:var(--gap);margin-bottom:var(--gap)}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:17px 18px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--jd-green)}
+.kpi.accent::before{background:var(--jd-yellow)}
+.kpi.kpi-wide{grid-column:span 2;min-width:270px}
+.kpi .k-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft)}
+.kpi .k-value{font-family:'Archivo';font-weight:800;font-size:28px;margin-top:8px;line-height:1.1}
+.kpi .k-foot{font-size:11.5px;color:var(--ink-soft);margin-top:8px;display:flex;gap:14px;flex-wrap:wrap}
+.kpi .k-foot b{color:var(--ink);font-weight:600}
+
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--gap);margin-bottom:var(--gap)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);min-width:0}
+.card h3{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:2px}
+.card h3 .tag{font-size:10px;font-weight:700;color:var(--jd-green);background:var(--jd-green-soft);padding:2px 7px;border-radius:6px;text-transform:uppercase;letter-spacing:.04em}
+.card .c-sub{font-size:12px;color:var(--ink-soft);margin-bottom:14px}
+.chart-box{position:relative;height:300px}.chart-box.tall{height:380px}
+.col-4{grid-column:span 4}.col-5{grid-column:span 5}.col-6{grid-column:span 6}.col-7{grid-column:span 7}.col-8{grid-column:span 8}.col-12{grid-column:span 12}
+.crumb-lnk{color:var(--jd-green);font-weight:600;cursor:pointer;text-decoration:underline}
+
+.toolbar{display:flex;align-items:center;gap:10px;margin:10px 0}
+.toolbar input{flex:0 1 320px;max-width:340px;padding:8px 12px;border:1px solid var(--line);border-radius:9px;font-family:inherit;font-size:13px}
+.toolbar input:focus{outline:2px solid var(--jd-green);outline-offset:1px}
+.toolbar .count{margin-left:auto;font-size:12px;color:var(--ink-soft);white-space:nowrap}
+.cmp-chip{display:flex;align-items:center;gap:7px;padding:5px 11px;border:1px solid var(--line);border-radius:20px;font-size:12.5px;font-weight:600;cursor:pointer;background:#fff;font-family:inherit}
+.table-wrap{overflow:auto;max-height:520px;border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse;font-size:12px}
 th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
-th{position:sticky;top:0;background:#fff;font-size:10.5px;text-transform:uppercase;color:var(--soft);cursor:pointer}
-tbody tr:hover{background:var(--gs)}
-.tag{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:6px}.on{background:var(--gs);color:var(--g)}.off{background:#eee;color:#888}
-.src{font-size:11.5px;color:var(--soft);margin-top:14px}
-/* tela de login */
-#login{display:none;min-height:100vh;align-items:center;justify-content:center;background:linear-gradient(150deg,#367C2B,#1B4A1E)}
-.lbox{background:#fff;border-radius:18px;padding:40px 36px;width:min(420px,92vw);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.lbox .mark{margin:0 auto 14px;width:56px;height:56px;font-size:26px}
-.lbox h2{font-family:Archivo;color:var(--gd);margin:0 0 6px;font-size:24px}
-.lbox p{color:var(--soft);font-size:13.5px;line-height:1.5;margin:0 0 24px}
-.btnjd{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px;border:none;border-radius:10px;background:var(--g);color:#fff;font-weight:700;font-size:15px;cursor:pointer;text-decoration:none;font-family:inherit}
-.btnjd:hover{background:var(--gd)}
-.btnjd .dy{width:22px;height:22px;border-radius:5px;background:var(--y);color:var(--gd);display:grid;place-items:center;font-weight:800;font-size:13px}
+th{font-size:9.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);font-weight:600;cursor:pointer;user-select:none;position:sticky;top:0;background:var(--surface);z-index:1}
+th:hover{color:var(--jd-green)} th.no-sort{cursor:default}
+td.num,th.num{text-align:right}
+tbody tr:hover{background:var(--jd-green-soft)}
+tfoot td{position:sticky;bottom:0;background:#EAF3E6;border-top:2px solid var(--jd-green);font-weight:600}
+.tg{display:inline-block;width:16px;text-align:center;font-weight:700;color:var(--jd-green)}
+.medal{text-align:center}
+.nota{font-family:'Archivo';font-weight:800}
+.bar{height:7px;border-radius:4px;background:var(--jd-green-soft);overflow:hidden;display:inline-block;vertical-align:middle;width:140px}
+.bar>span{display:block;height:100%;background:var(--jd-green)}
+.st{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:6px}
+.st.on{background:var(--jd-green-soft);color:var(--jd-green)} .st.off{background:#eee;color:#888}
+.empty{padding:36px;text-align:center;color:var(--ink-soft)}
+
+.soon-box{display:flex;gap:18px;align-items:flex-start}
+.soon-box .big{font-size:38px;line-height:1}
+.soon-box h3{font-size:17px;margin-bottom:6px}
+.soon-box p{margin:0 0 8px;color:var(--ink-soft);font-size:13.5px;line-height:1.55}
+.soon-box ul{margin:4px 0 0;padding-left:20px;font-size:13px;line-height:1.7}
+.help{font-size:13.5px;line-height:1.6}
+.help p{margin:0 0 10px}.help ul{margin:0 0 10px;padding-left:20px}
+
+/* LOGIN */
+#login{display:none;min-height:100vh;align-items:center;justify-content:center;background:linear-gradient(150deg,var(--jd-green),var(--jd-green-deep))}
+#login.on{display:flex}
+.lbox{background:#fff;border-radius:18px;padding:40px 36px;width:min(420px,92vw);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);border-top:6px solid var(--jd-yellow)}
+.lbox .mark{margin:0 auto 14px;width:56px;height:56px;border-radius:12px;background:var(--jd-yellow);color:var(--jd-green-deep);display:grid;place-items:center;font-family:'Archivo';font-weight:800;font-size:26px}
+.lbox h2{color:var(--jd-green-deep);margin:0 0 6px;font-size:24px}
+.lbox p{color:var(--ink-soft);font-size:13.5px;line-height:1.5;margin:0 0 24px}
+.btnjd{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px;border:none;border-radius:10px;background:var(--jd-green);color:#fff;font-weight:700;font-size:15px;cursor:pointer;text-decoration:none}
+.btnjd:hover{background:var(--jd-green-deep)}
+.btnjd .dy{width:22px;height:22px;border-radius:5px;background:var(--jd-yellow);color:var(--jd-green-deep);display:grid;place-items:center;font-weight:800;font-size:11px}
 .lerr{color:#C0392B;font-size:12.5px;margin-top:14px;min-height:16px}
-#app{display:none}
-@media(max-width:900px){.grid{grid-template-columns:1fr}}
+#loading{display:none;min-height:100vh;align-items:center;justify-content:center;color:var(--jd-green-deep);font-weight:600}
+#loading.on{display:flex}
+
+@media(max-width:1100px){.col-4,.col-5,.col-6,.col-7,.col-8{grid-column:span 12}}
+@media(max-width:860px){.app.on{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.kpi.kpi-wide{grid-column:span 1}}
+@media print{
+  @page{size:A4 landscape;margin:8mm}
+  body{background:#fff}
+  .sidebar,.filters,.toolbar input{display:none !important}
+  .app.on{display:block}
+  .topbar{position:static;background:#fff;border-bottom:2px solid var(--jd-green)}
+  .card,.kpi{box-shadow:none;border:1px solid #c2c2c2;break-inside:avoid}
+  .table-wrap{max-height:none;overflow:visible}
+  th{position:static}
+}
 </style>
 </head>
 <body>
+
+<div id="loading">Carregando sua frota…</div>
 
 <!-- LOGIN -->
 <section id="login">
@@ -69,127 +170,482 @@ tbody tr:hover{background:var(--gs)}
   </div>
 </section>
 
-<!-- PAINEL -->
-<div id="app">
-<header>
-  <img id="logo" src="logo.png" alt="logo" onload="this.style.display='block';document.getElementById('mark').style.display='none'">
-  <div class="mark" id="mark">G</div>
-  <div><h1>GestAG · Frota</h1><small>Dados reais do John Deere Operations Center</small></div>
-  <div class="filters">
-    <select id="fOrg"><option value="">Todas as organizações</option></select>
-    <select id="fTipo"><option value="">Todos os tipos</option></select>
-    <label class="chk"><input type="checkbox" id="fArq"> incluir arquivadas</label>
-    <div class="user"><span id="uNome"></span><button id="btnSair">Sair</button></div>
-  </div>
-</header>
-<main>
-  <section class="kpis" id="kpis"></section>
-  <div class="sec">Frota por tipo <span class="clr" id="clrTipo">✕ limpar seleção</span></div>
-  <section class="tipos" id="tipos"></section>
-  <section class="grid">
-    <div class="card"><h3>Composição da frota</h3><div class="box"><canvas id="chTipo"></canvas></div></div>
-    <div class="card"><h3>Máquinas por organização</h3><div class="box"><canvas id="chOrg"></canvas></div></div>
-  </section>
-  <section class="card">
-    <h3>Máquinas</h3>
-    <input id="q" placeholder="Buscar nome, modelo, série…" style="width:320px;margin-bottom:10px">
-    <div class="tw"><table><thead><tr>
-      <th data-k="name">Máquina</th><th data-k="tipo">Tipo</th><th data-k="grupo">Grupo</th><th data-k="make">Marca</th><th data-k="model">Modelo</th>
-      <th data-k="year">Ano</th><th data-k="serial">Série</th><th data-k="org">Organização</th><th data-k="archived">Status</th>
-    </tr></thead><tbody id="tb"></tbody></table></div>
-    <div class="src" id="src"></div>
-  </section>
-</main>
+<!-- APP -->
+<div class="app" id="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <img id="brandLogo" src="logo.png" alt="logo" onload="this.style.display='block';document.getElementById('brandFallback').style.display='none'">
+      <div id="brandFallback" style="display:flex;align-items:center;gap:11px"><div class="mark">G</div><div><h1>GestAG</h1><small>Gestão da frota John Deere</small></div></div>
+    </div>
+    <nav id="nav">
+      <button data-page="home" class="active"><span class="ic">▦</span> Visão Geral</button>
+      <button data-page="tratores"><span class="ic">▸</span> Tratores</button>
+      <button data-page="pulverizadores"><span class="ic">▸</span> Pulverizadores</button>
+      <button data-page="colheitadeiras"><span class="ic">▸</span> Colheitadeiras</button>
+      <button data-page="algodao"><span class="ic">▸</span> Colhedora de Algodão</button>
+      <button data-page="implementos"><span class="ic">▸</span> Implementos</button>
+      <button data-page="organizacoes"><span class="ic">★</span> Organizações</button>
+      <button data-page="eficiencia"><span class="ic">◴</span> Eficiência Operacional <span class="soon">EM BREVE</span></button>
+      <button data-page="uso"><span class="ic">▦</span> Uso das Tecnologias <span class="soon">EM BREVE</span></button>
+      <button data-page="comparacao"><span class="ic">⇄</span> Comparação <span class="soon">EM BREVE</span></button>
+      <button data-page="ajuda"><span class="ic">?</span> Ajuda</button>
+    </nav>
+    <div class="src-pill"><span class="dot"></span><span id="srcLabel">Conectado</span></div>
+    <div class="user-box"><b id="uNome">—</b><span id="uInfo"></span><br><button id="btnSair">Sair</button></div>
+    <div class="sidebar-foot">Dados do <b>John Deere Operations Center</b>, atualizados automaticamente todo dia às 6h. Você vê apenas as organizações liberadas para a sua conta.</div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h2 id="pageTitle">Visão Geral</h2>
+        <div class="crumb" id="pageCrumb"></div>
+        <div class="crumb" id="periodCrumb" style="margin-top:3px;font-weight:600;color:var(--jd-green)"></div>
+      </div>
+      <div class="filters">
+        <div class="ms" data-key="tipo"><button type="button" class="ms-btn">Tipo</button><div class="ms-pop"></div></div>
+        <div class="ms" data-key="serie"><button type="button" class="ms-btn">Série</button><div class="ms-pop"></div></div>
+        <div class="ms" data-key="modelo"><button type="button" class="ms-btn">Modelo</button><div class="ms-pop"></div></div>
+        <div class="ms" data-key="organizacao"><button type="button" class="ms-btn">Organização</button><div class="ms-pop"></div></div>
+        <label class="chk"><input type="checkbox" id="fArq"> incluir arquivadas</label>
+        <button class="btn-print" onclick="window.print()">🖨 Imprimir</button>
+      </div>
+    </div>
+
+    <!-- VISÃO GERAL -->
+    <section class="page active" id="page-home">
+      <div class="hero-wrap"><img src="imagens/foto_home.jpg" onload="this.style.display='block'" alt=""><div class="hero-cap"><h2>Frota John Deere</h2><span>Visão geral consolidada das organizações conectadas</span></div></div>
+      <section class="kpis" id="homeKpis"></section>
+      <section class="grid">
+        <div class="card col-5" style="display:flex;flex-direction:column"><h3>Composição da frota</h3>
+          <div class="c-sub" id="frotaCrumb"></div>
+          <div class="chart-box" style="flex:1;min-height:300px"><canvas id="chFrota"></canvas></div></div>
+        <div class="card col-7"><h3>Resumo por tipo, série, modelo e máquina</h3>
+          <div class="c-sub">Clique numa fatia do gráfico ao lado para filtrar, ou no <b>+</b> para abrir Série, Modelo e Máquina.</div>
+          <div class="toolbar" style="margin-top:0"><span class="count" id="resumoScope" style="margin-left:0;color:var(--jd-green-deep);font-weight:600"></span><span style="flex:1"></span><button class="cmp-chip" id="resumoCollapse">⊟ Recolher tudo</button></div>
+          <div class="table-wrap" style="height:330px"><table><thead><tr>
+            <th class="no-sort">Tipo / Série / Modelo / Máquina</th><th class="num no-sort">Máquinas</th><th class="num no-sort">% da frota</th><th class="num no-sort">Organizações</th>
+          </tr></thead><tbody id="tbodyResumo"></tbody></table></div></div>
+      </section>
+      <section class="grid">
+        <div class="card col-12"><h3>Máquinas por organização <span class="tag">autopropelidas × implementos</span></h3>
+          <div class="c-sub">Verde = máquinas autopropelidas (tratores, pulverizadores, colheitadeiras…) · amarelo = implementos.</div>
+          <div class="chart-box" id="orgBox"><canvas id="chOrgHome"></canvas></div></div>
+      </section>
+    </section>
+
+    <!-- PÁGINAS DE EQUIPAMENTO (geradas) -->
+    <section class="page" id="page-tratores"></section>
+    <section class="page" id="page-pulverizadores"></section>
+    <section class="page" id="page-colheitadeiras"></section>
+    <section class="page" id="page-algodao"></section>
+    <section class="page" id="page-implementos"></section>
+
+    <!-- ORGANIZAÇÕES -->
+    <section class="page" id="page-organizacoes">
+      <div class="hero-wrap"><img src="imagens/foto_organizacoes.jpg" onload="this.style.display='block'" alt=""><div class="hero-cap"><h2>Organizações</h2><span>Frota por cliente / fazenda</span></div></div>
+      <section class="kpis" id="orgKpis"></section>
+      <section class="grid">
+        <div class="card col-12"><h3>Ranking de organizações <span class="tag">por tamanho de frota</span></h3>
+          <div class="c-sub">Organizações conectadas ao GestAG, ordenadas pelo número de máquinas. Clique no cabeçalho para ordenar.</div>
+          <div class="toolbar"><input type="text" id="orgSearch" placeholder="Buscar organização…"><span class="count" id="orgCount"></span></div>
+          <div class="table-wrap"><table><thead id="theadOrg"></thead><tbody id="tbodyOrg"></tbody><tfoot id="tfootOrg"></tfoot></table></div></div>
+      </section>
+    </section>
+
+    <!-- EM BREVE -->
+    <section class="page" id="page-eficiencia"></section>
+    <section class="page" id="page-uso"></section>
+    <section class="page" id="page-comparacao"></section>
+
+    <!-- AJUDA -->
+    <section class="page" id="page-ajuda">
+      <section class="grid">
+        <div class="card col-6"><h3>De onde vêm os dados</h3><div class="help">
+          <p>Os dados são lidos do <b>John Deere Operations Center</b> pela API oficial, gravados no banco do GestAG e <b>atualizados todo dia às 6h</b>.</p>
+          <p>Você vê <b>apenas as organizações</b> que a sua conta John Deere tem permissão de acessar e que foram <b>conectadas ao GestAG</b> em connections.deere.com.</p></div></div>
+        <div class="card col-6"><h3>Classificação</h3><div class="help">
+          <ul><li><b>Máquinas autopropelidas:</b> tratores, pulverizadores, colheitadeiras, colhedoras de algodão, forrageiras, motoniveladoras e veículos utilitários.</li>
+          <li><b>Implementos:</b> plataformas, plantadeiras, grades, distribuidores, barras, reboques e demais equipamentos acoplados.</li>
+          <li><b>Séries</b> (8R, 7J, S700, M4000…) são identificadas pelo modelo.</li>
+          <li><b>Arquivadas</b> ficam ocultas por padrão — marque "incluir arquivadas" no topo para vê-las.</li></ul></div></div>
+        <div class="card col-12"><h3>Em breve</h3><div class="help"><p>Com a aprovação do acesso de <b>Produção</b> da John Deere, entram: horas de motor, eficiência operacional (trabalhando / transporte / ocioso), uso das tecnologias (AutoTrac, Sinal de Correção, Controle de Seção…), notas, quartis e comparação entre anos.</p></div></div>
+      </section>
+    </section>
+  </main>
 </div>
 
 <script>
+/* ============================== CONFIG ============================== */
 const FN = "https://znhbjdkdarcrhqfcfzxq.supabase.co/functions/v1/jd";
-const TIPOS={
- "Tractor":["Trator","🚜","M"],"Combine":["Colheitadeira","🌾","M"],"Sprayer":["Pulverizador","💧","M"],
- "Cotton Harvester":["Colhedora de Algodão","☁️","M"],"Utility Vehicle":["Veículo Utilitário","🚙","M"],
- "Forage Harvester":["Forrageira","🌿","M"],"Motor Grader":["Motoniveladora","🛣️","M"],"Loader":["Carregador Frontal","🏗️","I"],
- "Planter":["Plantadeira","🌱","I"],"Disk":["Grade","⚙️","I"],"Platform Head":["Plataforma de Corte","🔪","I"],
- "Draper Head":["Plataforma Draper","🔪","I"],"Corn Head":["Plataforma de Milho","🌽","I"],"Cotton Head":["Unidade de Algodão","☁️","I"],
- "Dry Spreader":["Distribuidor","🧂","I"],"Boom (Application)":["Barra de Aplicação","💧","I"],"Trailer":["Reboque","🛻","I"],
- "Saw":["Serra","🪚","I"],"Blower":["Soprador","🌬️","I"],"Seeder":["Semeadora","🌱","I"],"Air Seeder":["Semeadora a Ar","🌱","I"],
- "Air Cart":["Carrinho de Sementes","🌱","I"],"Baler":["Enfardadora","📦","I"],"Square Baler":["Enfardadora Quadrada","📦","I"],
- "Mower":["Roçadeira","✂️","I"],"Grain Cart":["Carreta Graneleira","🌾","I"],"Ripper":["Subsolador","⛏️","I"],
- "Roller":["Rolo","🛞","I"],"Chipper":["Picador","🪵","I"],"Other":["Outros","🔧","I"]
+const TIPOS = {
+ "Tractor":["Trator","M"],"Combine":["Colheitadeira","M"],"Sprayer":["Pulverizador","M"],
+ "Cotton Harvester":["Colhedora de Algodão","M"],"Utility Vehicle":["Veículo Utilitário","M"],
+ "Forage Harvester":["Forrageira","M"],"Motor Grader":["Motoniveladora","M"],"Loader":["Carregador Frontal","I"],
+ "Planter":["Plantadeira","I"],"Disk":["Grade","I"],"Platform Head":["Plataforma de Corte","I"],
+ "Draper Head":["Plataforma Draper","I"],"Corn Head":["Plataforma de Milho","I"],"Cotton Head":["Unidade de Algodão","I"],
+ "Dry Spreader":["Distribuidor","I"],"Boom (Application)":["Barra de Aplicação","I"],"Trailer":["Reboque","I"],
+ "Saw":["Serra","I"],"Blower":["Soprador","I"],"Seeder":["Semeadora","I"],"Air Seeder":["Semeadora a Ar","I"],
+ "Air Cart":["Carrinho de Sementes","I"],"Baler":["Enfardadora","I"],"Square Baler":["Enfardadora Quadrada","I"],
+ "Mower":["Roçadeira","I"],"Grain Cart":["Carreta Graneleira","I"],"Ripper":["Subsolador","I"],
+ "Roller":["Rolo","I"],"Chipper":["Picador","I"],"Other":["Outros","I"]
 };
-const tr=t=>TIPOS[t]||[t,"🔧","I"];
-const PAL=["#367C2B","#7AB55C","#FFDE00","#1B4A1E","#A7CE96","#E3B600","#4F8F3F","#C8D7C2","#2F6FB0","#E8912B","#8FB3D9","#C0784A"];
-let ALL=[],charts={},sortK="tipo",sortD=1;
-const fmt=n=>Number(n).toLocaleString("pt-BR");
-const $=id=>document.getElementById(id);
+const EQUIP = {
+  tratores:{tipo:"Trator",cap:"Tratores",sub:"Famílias 8R · 9R · 7M · 7J · 6J · 6M · 5E"},
+  pulverizadores:{tipo:"Pulverizador",cap:"Pulverizadores",sub:"Séries M4000 · 400R · PLA · 4X30 · R4000 · DryBox · 230M"},
+  colheitadeiras:{tipo:"Colheitadeira",cap:"Colheitadeiras",sub:"Gerações S7 · S700 · S600"},
+  algodao:{tipo:"Colhedora de Algodão",cap:"Colhedoras de Algodão",sub:"CP · CS · 7760"},
+  implementos:{grupo:"Implemento",cap:"Implementos",sub:"Plataformas, plantadeiras, grades, distribuidores e demais"}
+};
+const TITLES = {
+  home:["Visão Geral","Frota consolidada das organizações conectadas"],
+  tratores:["Tratores",EQUIP.tratores.sub], pulverizadores:["Pulverizadores",EQUIP.pulverizadores.sub],
+  colheitadeiras:["Colheitadeiras",EQUIP.colheitadeiras.sub], algodao:["Colhedora de Algodão",EQUIP.algodao.sub],
+  implementos:["Implementos",EQUIP.implementos.sub], organizacoes:["Organizações","Frota por cliente / fazenda"],
+  eficiencia:["Eficiência Operacional","Trabalhando · Transporte · Ocioso"], uso:["Uso das Tecnologias","AutoTrac · Sinal de Correção · Controle de Seção…"],
+  comparacao:["Comparação","Evolução entre anos"], ajuda:["Ajuda","Origem dos dados e classificação"]
+};
+const PALETTE = ["#367C2B","#7AB55C","#FFDE00","#1B4A1E","#A7CE96","#E3B600","#4F8F3F","#C8D7C2","#2F6FB0","#E8912B","#8FB3D9","#C0784A"];
 
-/* ---------- sessão ---------- */
+/* ===================== SÉRIES (mesmas regras da v1) ===================== */
+const up = s => String(s||"").toUpperCase().replace(/\s+/g," ").trim();
+function familiaTrator(mo){ const m=up(mo);
+  if(/^7M/.test(m)) return "7M"; if(/^9R/.test(m)||/^9\d{3}R/.test(m)) return "9R";
+  if(/^8\d{3}R/.test(m)||/^8R/.test(m)) return "8R"; if(/^7\d{3}J/.test(m)) return "7J";
+  if(/^6\d{3}J/.test(m)) return "6J"; if(/^6\d{3}M/.test(m)) return "6M"; if(/^5\d+EN?/.test(m)) return "5E"; return null; }
+function familiaPulv(mo){ const m=up(mo).replace(/\s+/g,"");
+  if(m==="M4040DN"||m==="R4045"||m==="400RDN") return "DryBox";
+  if(/^M40(30|40|25)/.test(m)) return "M4000"; if(/^4[34]0R/.test(m)) return "400R"; if(/^125J/.test(m)) return "PLA";
+  if(/^4[67]30/.test(m)) return "4X30"; if(/^R40(30|38)/.test(m)) return "R4000"; if(/^230M/.test(m)) return "230M"; return null; }
+function geracaoColh(mo){ const m=up(mo);
+  if(/^S7 /.test(m)) return "S7"; if(/^S7\d0\b/.test(m)) return "S700"; if(/^S6\d0\b/.test(m)) return "S600"; return null; }
+function familiaAlg(mo){ const m=up(mo); if(/^CP/.test(m)) return "CP"; if(/^CS/.test(m)) return "CS"; if(/^77\d0/.test(m)) return "7760"; return null; }
+function serieDe(tipo,mo){
+  if(tipo==="Trator") return familiaTrator(mo); if(tipo==="Pulverizador") return familiaPulv(mo);
+  if(tipo==="Colheitadeira") return geracaoColh(mo); if(tipo==="Colhedora de Algodão") return familiaAlg(mo); return null; }
+
+/* ============================== ESTADO ============================== */
+let ALL=[], charts={}, currentPage="home", USER={};
+const FILTERS={tipo:[],serie:[],modelo:[],organizacao:[]};
+const PLACE={tipo:"Tipo",serie:"Série",modelo:"Modelo",organizacao:"Organização"};
+const tableState={};
+const $=id=>document.getElementById(id);
+const fmt=(n,d=0)=>(n==null||isNaN(n))?"—":Number(n).toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d});
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const norm=s=>String(s??"").toLowerCase();
+if(window.ChartDataLabels) Chart.register(window.ChartDataLabels);
+Chart.defaults.font.family="Inter"; Chart.defaults.color="#415144";
+
+/* ============================== SESSÃO ============================== */
 function getToken(){
   const m=location.hash.match(/t=([^&]+)/);
-  if(m){ sessionStorage.setItem("gestag_t",m[1]); history.replaceState(null,"",location.pathname); }
-  return sessionStorage.getItem("gestag_t");
+  if(m){ try{sessionStorage.setItem("gestag_t",m[1]);}catch(e){} history.replaceState(null,"",location.pathname); }
+  try{ return sessionStorage.getItem("gestag_t"); }catch(e){ return m?m[1]:null; }
 }
-function showLogin(msg){ $("app").style.display="none"; $("login").style.display="flex"; $("lerr").textContent=msg||""; }
+function show(id){ ["loading","login"].forEach(x=>$(x).classList.toggle("on",x===id)); $("app").classList.toggle("on",id==="app"); }
+function showLogin(msg){ show("login"); $("lerr").textContent=msg||""; }
 $("btnLogin").href=FN+"/login";
-$("btnSair").onclick=()=>{ sessionStorage.removeItem("gestag_t"); showLogin("Você saiu."); };
+$("btnSair").onclick=()=>{ try{sessionStorage.removeItem("gestag_t");}catch(e){} showLogin("Você saiu."); };
 
 async function start(){
   const t=getToken();
   if(!t) return showLogin();
+  show("loading");
   try{
     const r=await fetch(FN+"/frota",{headers:{"x-gestag-token":t}});
-    if(r.status===401){ sessionStorage.removeItem("gestag_t"); return showLogin("Sessão expirada. Entre novamente."); }
+    if(r.status===401){ try{sessionStorage.removeItem("gestag_t");}catch(e){} return showLogin("Sessão expirada. Entre novamente."); }
     const j=await r.json();
-    $("login").style.display="none"; $("app").style.display="block";
-    $("uNome").textContent=j.nome||"";
-    if(!j.orgs||!j.orgs.length){ $("kpis").innerHTML=`<div class="card">Nenhuma organização liberada para o GestAG nesta conta. Conecte sua organização em <b>connections.deere.com</b>.</div>`; return; }
-    j.orgs.forEach(o=>(o.maquinas||[]).forEach(m=>{ const [pt,ic,g]=tr(m.tipo);
-      ALL.push({name:m.nome,type:m.tipo,tipo:pt,icone:ic,grupo:g==="M"?"Máquina":"Implemento",make:m.marca||"",model:m.modelo||"",
-        year:m.ano||"",serial:m.numero_serie||"",archived:!!m.arquivada,org:o.nome}); }));
-    [...new Set(ALL.map(m=>m.org))].sort().forEach(v=>$("fOrg").add(new Option(v,v)));
-    [...new Set(ALL.map(m=>m.tipo))].sort().forEach(v=>$("fTipo").add(new Option(v,v)));
-    $("src").textContent="Consultado em "+new Date(j.geradoEm).toLocaleString("pt-BR")+" · fonte: Supabase ← API John Deere";
-    render();
+    USER={nome:j.nome||"", em:j.geradoEm};
+    ALL=[];
+    (j.orgs||[]).forEach(o=>(o.maquinas||[]).forEach(m=>{
+      const t=TIPOS[m.tipo]||[m.tipo||"Outros","I"];
+      ALL.push({name:m.nome||"(sem nome)", tipo:t[0], grupo:t[1]==="M"?"Máquina":"Implemento",
+        make:m.marca||"", model:m.modelo||"—", year:m.ano||"", serial:m.numero_serie||"",
+        archived:!!m.arquivada, org:o.nome||"—", atualizado:m.atualizado_em||null,
+        serie: serieDe(t[0], m.modelo) });
+    }));
+    show("app");
+    $("uNome").textContent=USER.nome||"Usuário John Deere";
+    $("uInfo").textContent=`${(j.orgs||[]).length} organização(ões) conectada(s)`;
+    const ult=ALL.map(m=>m.atualizado).filter(Boolean).sort().pop();
+    $("periodCrumb").textContent= ult? "Dados atualizados em "+new Date(ult).toLocaleString("pt-BR") : "";
+    $("srcLabel").textContent="Operations Center · "+fmt(ALL.filter(m=>!m.archived).length)+" ativas";
+    if(!ALL.length){ $("homeKpis").innerHTML=`<div class="card col-12">Nenhuma organização liberada para o GestAG nesta conta. Conecte sua organização em <b>connections.deere.com</b> e entre novamente.</div>`; return; }
+    buildEquipPages(); buildSoonPages(); initMS(); refreshOptions(); switchPage("home");
   }catch(e){ showLogin("Erro ao carregar: "+e.message); }
 }
 
-/* ---------- painel ---------- */
-function mk(id,cfg){if(charts[id])charts[id].destroy();charts[id]=new Chart($(id),cfg);}
-function cnt(arr,k){const o={};arr.forEach(m=>o[m[k]]=(o[m[k]]||0)+1);return Object.entries(o).sort((a,b)=>b[1]-a[1]);}
-function base(){
-  const org=$("fOrg").value,arq=$("fArq").checked,q=$("q").value.toLowerCase();
-  return ALL.filter(m=>(arq||!m.archived)&&(!org||m.org===org)&&(!q||[m.name,m.model,m.serial,m.org,m.tipo].join(" ").toLowerCase().includes(q)));
+/* ============================== FILTROS ============================== */
+function passa(m,skip={}){
+  const F=FILTERS;
+  if(!$("fArq").checked && m.archived) return false;
+  if(!skip.tipo && F.tipo.length && !F.tipo.includes(m.tipo)) return false;
+  if(!skip.serie && F.serie.length && !F.serie.includes(m.serie||"Outras séries")) return false;
+  if(!skip.modelo && F.modelo.length && !F.modelo.includes(m.model)) return false;
+  if(!skip.organizacao && F.organizacao.length && !F.organizacao.includes(m.org)) return false;
+  return true;
 }
-function render(){
-  const b=base(), tp=$("fTipo").value, d=tp?b.filter(m=>m.tipo===tp):b;
-  const ativos=d.filter(m=>!m.archived).length;
-  $("kpis").innerHTML=[
-    ["Total",d.length,""],["Ativas",ativos,""],["Autopropelidas",d.filter(m=>m.grupo==="Máquina").length,"y"],
-    ["Implementos",d.filter(m=>m.grupo==="Implemento").length,"y"],["Organizações",new Set(d.map(m=>m.org)).size,""]
-  ].map(([l,v,c])=>`<div class="kpi ${c}"><div class="kl">${l}</div><div class="kv">${fmt(v)}</div></div>`).join("");
-  const grp=t=>(ALL.find(m=>m.tipo===t)||{}).grupo;
-  const ct=cnt(b,"tipo").sort((x,y)=>grp(x[0])===grp(y[0])?y[1]-x[1]:(grp(x[0])==="Máquina"?-1:1));
-  $("tipos").innerHTML=ct.map(([t,n])=>{const m=ALL.find(x=>x.tipo===t);
-    return `<div class="tcard ${tp===t?"sel":""}" data-t="${t}"><div class="ic">${m.icone}</div><div class="tc">${n}</div><div class="tn">${t}</div><div class="tg">${m.grupo}</div></div>`;}).join("")
-    ||`<div style="color:#888">Nenhuma máquina.</div>`;
-  document.querySelectorAll(".tcard").forEach(c=>c.onclick=()=>{$("fTipo").value=$("fTipo").value===c.dataset.t?"":c.dataset.t;render();});
-  $("clrTipo").style.display=tp?"inline":"none";
-  const t=cnt(d,"tipo");
-  mk("chTipo",{type:"doughnut",data:{labels:t.map(x=>x[0]),datasets:[{data:t.map(x=>x[1]),backgroundColor:PAL,borderColor:"#fff",borderWidth:2}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:"55%",plugins:{legend:{position:"right"}},
-      onClick:(e,els)=>{if(els.length){$("fTipo").value=t[els[0].index][0];render();}}}});
-  const o=cnt(d,"org");
-  mk("chOrg",{type:"bar",data:{labels:o.map(x=>x[0]),datasets:[{data:o.map(x=>x[1]),backgroundColor:"#367C2B",maxBarThickness:46}]},
-    options:{responsive:true,maintainAspectRatio:false,indexAxis:"y",plugins:{legend:{display:false}},
-      scales:{x:{grid:{display:false},ticks:{precision:0}},y:{grid:{display:false}}}}});
-  const rows=[...d].sort((a,b)=>String(a[sortK]).localeCompare(String(b[sortK]),"pt-BR",{numeric:true})*sortD);
-  $("tb").innerHTML=rows.map(m=>`<tr><td><b>${m.name}</b></td><td>${m.icone} ${m.tipo}</td><td>${m.grupo}</td><td>${m.make||"—"}</td><td>${m.model||"—"}</td>
-    <td>${m.year||"—"}</td><td>${m.serial||"—"}</td><td>${m.org}</td>
-    <td><span class="tag ${m.archived?"off":"on"}">${m.archived?"Arquivada":"Ativa"}</span></td></tr>`).join("")
-    ||`<tr><td colspan="9" style="text-align:center;color:#888;padding:30px">Nenhuma máquina.</td></tr>`;
+const filt = (arr,skip) => arr.filter(m=>passa(m,skip));
+function buildMS(key,items){
+  const box=document.querySelector(`.ms[data-key="${key}"]`); if(!box) return;
+  const pop=box.querySelector(".ms-pop");
+  FILTERS[key]=FILTERS[key].filter(v=>items.includes(v));
+  pop.innerHTML=(items.length>10?`<input type="text" class="ms-search" placeholder="Buscar…">`:"")
+    +`<div class="ms-list">`+(items.length?items.map(v=>`<label class="ms-opt" data-v="${esc(norm(v))}"><input type="checkbox" value="${esc(v)}" ${FILTERS[key].includes(v)?"checked":""}> ${esc(v)}</label>`).join(""):`<div class="ms-opt" style="color:var(--ink-soft)">Sem opções</div>`)+`</div>`
+    +(items.length?`<div class="ms-foot"><button type="button" class="ms-all">Selecionar todos</button><button type="button" class="ms-clear">Limpar</button></div>`:"");
+  const changed=()=>{ if(key==="tipo"||key==="serie") refreshOptions(key); else updateLabel(key); renderAll(); };
+  pop.querySelectorAll(".ms-list input").forEach(cb=>cb.addEventListener("change",()=>{ FILTERS[key]=[...pop.querySelectorAll(".ms-list input:checked")].map(i=>i.value); changed(); }));
+  const a=pop.querySelector(".ms-all"); if(a) a.onclick=()=>{ FILTERS[key]=items.slice(); buildMS(key,items); changed(); };
+  const c=pop.querySelector(".ms-clear"); if(c) c.onclick=()=>{ FILTERS[key]=[]; buildMS(key,items); changed(); };
+  const s=pop.querySelector(".ms-search"); if(s){ s.onclick=e=>e.stopPropagation(); s.oninput=()=>{ const q=norm(s.value); pop.querySelectorAll(".ms-list .ms-opt").forEach(o=>o.style.display=(o.dataset.v||"").includes(q)?"flex":"none"); }; }
+  updateLabel(key);
 }
-["fOrg","fTipo","fArq","q"].forEach(id=>$(id).addEventListener("input",render));
-$("clrTipo").onclick=()=>{$("fTipo").value="";render();};
-document.querySelectorAll("th[data-k]").forEach(th=>th.addEventListener("click",()=>{sortD=sortK===th.dataset.k?-sortD:1;sortK=th.dataset.k;render();}));
+function updateLabel(key){
+  const btn=document.querySelector(`.ms[data-key="${key}"] .ms-btn`), sel=FILTERS[key];
+  btn.textContent= sel.length===0?`${PLACE[key]}: todos`: sel.length===1?`${PLACE[key]}: ${sel[0]}`:`${PLACE[key]}: ${sel.length} selec.`;
+  btn.classList.toggle("has-sel",sel.length>0); btn.insertAdjacentText("beforeend"," ▾");
+}
+function initMS(){
+  document.querySelectorAll(".ms .ms-btn").forEach(b=>b.addEventListener("click",e=>{
+    const ms=b.closest(".ms"), open=ms.classList.contains("open");
+    document.querySelectorAll(".ms.open").forEach(o=>o.classList.remove("open"));
+    if(!open) ms.classList.add("open"); e.stopPropagation(); }));
+  document.querySelectorAll(".ms-pop").forEach(p=>p.addEventListener("click",e=>e.stopPropagation()));
+  document.addEventListener("click",()=>document.querySelectorAll(".ms.open").forEach(o=>o.classList.remove("open")));
+  $("fArq").addEventListener("change",()=>{ refreshOptions(); renderAll(); });
+}
+const uniq=(arr,f)=>[...new Set(arr.map(f).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),"pt-BR",{numeric:true}));
+function poolPagina(){ const c=EQUIP[currentPage]; const vis=ALL.filter(m=>$("fArq").checked||!m.archived);
+  if(!c) return vis; return vis.filter(m=>c.tipo?m.tipo===c.tipo:m.grupo===c.grupo); }
+function refreshOptions(changedKey){
+  const pool=poolPagina(), F=FILTERS;
+  const pTipo=pool, pSerie=pool.filter(m=>!F.tipo.length||F.tipo.includes(m.tipo)),
+        pModelo=pSerie.filter(m=>!F.serie.length||F.serie.includes(m.serie||"Outras séries"));
+  if(changedKey!=="tipo") buildMS("tipo",uniq(pTipo,m=>m.tipo)); else updateLabel("tipo");
+  if(changedKey!=="serie") buildMS("serie",uniq(pSerie,m=>m.serie||"Outras séries")); else updateLabel("serie");
+  buildMS("modelo",uniq(pModelo,m=>m.model));
+  buildMS("organizacao",uniq(pool,m=>m.org));
+  const tb=document.querySelector('.ms[data-key="tipo"]'); tb.style.display = (EQUIP[currentPage]&&EQUIP[currentPage].tipo)?"none":"";
+}
+
+/* ============================== NAVEGAÇÃO ============================== */
+document.querySelectorAll("#nav button").forEach(b=>b.addEventListener("click",()=>switchPage(b.dataset.page)));
+function switchPage(p){
+  currentPage=p;
+  document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===p));
+  document.querySelectorAll(".page").forEach(s=>s.classList.toggle("active",s.id==="page-"+p));
+  $("pageTitle").textContent=TITLES[p][0]; $("pageCrumb").textContent=TITLES[p][1];
+  refreshOptions(); renderAll(); window.scrollTo(0,0);
+}
+function renderAll(){
+  if(!ALL.length) return;
+  if(currentPage==="home") renderHome();
+  else if(currentPage==="organizacoes") renderOrgs();
+  else if(EQUIP[currentPage]) renderEquip(currentPage);
+}
+
+/* ============================== COMPONENTES ============================== */
+function mkChart(id,cfg){ const el=$(id); if(!el) return; if(charts[id]) charts[id].destroy(); charts[id]=new Chart(el,cfg); }
+const baseOpts=(extra={})=>Object.assign({responsive:true,maintainAspectRatio:false,animation:false,
+  plugins:{legend:{labels:{font:{size:12},boxWidth:14,color:"#415144"}},datalabels:{display:false}}},extra);
+function renderKpis(elId,cards){
+  $(elId).innerHTML=cards.map(k=>{
+    const fz=k.isText?(String(k.v).length>26?"16px":String(k.v).length>16?"19px":"24px"):"28px";
+    return `<div class="kpi ${k.accent?"accent":""} ${k.wide?"kpi-wide":""}"><div class="k-label">${k.l}</div>
+      <div class="k-value ${k.isText?"":"num"}" style="font-size:${fz};${k.isText?"white-space:normal;word-break:break-word":""}">${k.v}</div>
+      <div class="k-foot">${k.foot||""}</div></div>`;}).join("");
+}
+function agrupa(arr,fn){ const o={}; arr.forEach(m=>{ const k=fn(m)||"—"; (o[k]??=[]).push(m); }); return o; }
+const ordKeys=o=>Object.keys(o).sort((a,b)=>o[b].length-o[a].length||a.localeCompare(b,"pt-BR",{numeric:true}));
+const sortArrow=(k,st)=> !st||st.key!==k?' <span style="opacity:.28">↕</span>':(st.dir===1?' <span style="color:var(--jd-green)">▲</span>':' <span style="color:var(--jd-green)">▼</span>');
+const doughnutLabels={color:"#fff",font:{size:11,weight:"700"},display:ctx=>{ const d=ctx.dataset.data,tot=d.reduce((a,b)=>a+b,0); return tot>0&&d[ctx.dataIndex]/tot>=.05; },
+  formatter:(v,ctx)=>{ const tot=ctx.dataset.data.reduce((a,b)=>a+b,0); return `${fmt(v)}\n${fmt(v/tot*100,0)}%`; },textAlign:"center"};
+const barLabels={display:true,anchor:"end",align:"end",clip:false,color:"#3A463C",font:{size:11,weight:"700"},formatter:v=>v>0?fmt(v):""};
+
+/* ============================== VISÃO GERAL ============================== */
+let drill={tipo:null,serie:null,modelo:null}, resumoOpen=new Set(), _homeData=[];
+function drillFiltrado(arr){ return arr.filter(m=>(!drill.tipo||m.tipo===drill.tipo)&&(!drill.serie||(m.serie||"Outras séries")===drill.serie)&&(!drill.modelo||m.model===drill.modelo)); }
+function renderHome(){
+  const d=filt(ALL); _homeData=d;
+  const orgSel=FILTERS.organizacao.length===1;
+  const nMaq=d.filter(m=>m.grupo==="Máquina").length, nImp=d.length-nMaq;
+  renderKpis("homeKpis",[
+    orgSel?{l:"Organização",v:esc(FILTERS.organizacao[0]),isText:true,wide:true,accent:true,foot:"organização selecionada"}
+          :{l:"Organizações",v:fmt(new Set(d.map(m=>m.org)).size),wide:true,accent:true,foot:"conectadas ao GestAG"},
+    {l:"Total na frota",v:fmt(d.length),foot:`<span>Autoprop. <b>${fmt(nMaq)}</b></span><span>Impl. <b>${fmt(nImp)}</b></span>`},
+    {l:"Tratores",v:fmt(d.filter(m=>m.tipo==="Trator").length),foot:`séries <b>${fmt(new Set(d.filter(m=>m.tipo==="Trator").map(m=>m.serie||"–")).size)}</b>`},
+    {l:"Pulverizadores",v:fmt(d.filter(m=>m.tipo==="Pulverizador").length),foot:`séries <b>${fmt(new Set(d.filter(m=>m.tipo==="Pulverizador").map(m=>m.serie||"–")).size)}</b>`},
+    {l:"Colheitadeiras",v:fmt(d.filter(m=>m.tipo==="Colheitadeira"||m.tipo==="Colhedora de Algodão").length),foot:`grãos <b>${fmt(d.filter(m=>m.tipo==="Colheitadeira").length)}</b> · algodão <b>${fmt(d.filter(m=>m.tipo==="Colhedora de Algodão").length)}</b>`}
+  ]);
+  renderFrota(); renderResumo(); renderOrgHome(d);
+}
+function renderFrota(){
+  const d=_homeData; let nivel, base;
+  if(!drill.tipo){ nivel="Tipo"; base=agrupa(d,m=>m.tipo); }
+  else if(!drill.serie){ nivel="Série"; base=agrupa(d.filter(m=>m.tipo===drill.tipo),m=>m.serie||"Outras séries"); }
+  else if(!drill.modelo){ nivel="Modelo"; base=agrupa(d.filter(m=>m.tipo===drill.tipo&&(m.serie||"Outras séries")===drill.serie),m=>m.model); }
+  else { nivel="Máquina"; base=agrupa(drillFiltrado(d),m=>m.name); }
+  let labels=ordKeys(base); let vals=labels.map(l=>base[l].length);
+  if(labels.length>12){ const rest=vals.slice(11).reduce((a,b)=>a+b,0); labels=labels.slice(0,11).concat(["Demais"]); vals=vals.slice(0,11).concat([rest]); }
+  let h=`<span class="crumb-lnk" data-l="0">Tipos</span>`;
+  if(drill.tipo) h+=` › <span class="crumb-lnk" data-l="1">${esc(drill.tipo)}</span>`;
+  if(drill.serie) h+=` › <span class="crumb-lnk" data-l="2">${esc(drill.serie)}</span>`;
+  if(drill.modelo) h+=` › <span>${esc(drill.modelo)}</span>`;
+  h+=` — nível: <b>${nivel}</b>${nivel!=="Máquina"?" (clique numa fatia para abrir)":""}`;
+  $("frotaCrumb").innerHTML=h;
+  $("frotaCrumb").querySelectorAll(".crumb-lnk").forEach(s=>s.onclick=()=>{ const l=+s.dataset.l;
+    if(l===0) drill={tipo:null,serie:null,modelo:null}; else if(l===1){drill.serie=null;drill.modelo=null;} else drill.modelo=null;
+    renderFrota(); renderResumo(); });
+  mkChart("chFrota",{type:"doughnut",data:{labels,datasets:[{data:vals,backgroundColor:labels.map((_,i)=>PALETTE[i%PALETTE.length]),borderColor:"#fff",borderWidth:2}]},
+    options:baseOpts({cutout:"55%",onClick:(e,els)=>{ if(!els.length) return; const lab=labels[els[0].index]; if(lab==="Demais") return;
+        if(nivel==="Tipo") drill.tipo=lab; else if(nivel==="Série") drill.serie=lab; else if(nivel==="Modelo") drill.modelo=lab; else return;
+        renderFrota(); renderResumo(); },
+      plugins:{legend:{position:"right",labels:{boxWidth:13,font:{size:11.5}}},datalabels:doughnutLabels}})});
+}
+function renderResumo(){
+  const d=drillFiltrado(_homeData), tot=_homeData.length||1;
+  const ps=[drill.tipo,drill.serie,drill.modelo].filter(Boolean);
+  $("resumoScope").textContent= ps.length?"Filtrado pelo gráfico: "+ps.join(" › "):`${fmt(d.length)} equipamentos`;
+  const cel=a=>`<td class="num">${fmt(a.length)}</td><td class="num">${fmt(a.length/tot*100,1)}%</td><td class="num">${fmt(new Set(a.map(m=>m.org)).size)}</td>`;
+  const ico=k=>`<span class="tg">${resumoOpen.has(k)?"−":"+"}</span>`;
+  let html="";
+  const porTipo=agrupa(d,m=>m.tipo);
+  ordKeys(porTipo).forEach(tp=>{ const kT="t:"+tp;
+    html+=`<tr class="hc" data-k="${esc(kT)}" style="cursor:pointer;font-weight:700"><td>${ico(kT)} ${esc(tp)}</td>${cel(porTipo[tp])}</tr>`;
+    if(!resumoOpen.has(kT)) return;
+    const porS=agrupa(porTipo[tp],m=>m.serie||"Outras séries");
+    ordKeys(porS).forEach(se=>{ const kS=kT+"|s:"+se;
+      html+=`<tr class="hc" data-k="${esc(kS)}" style="cursor:pointer"><td style="padding-left:28px">${ico(kS)} ${esc(se)}</td>${cel(porS[se])}</tr>`;
+      if(!resumoOpen.has(kS)) return;
+      const porM=agrupa(porS[se],m=>m.model);
+      ordKeys(porM).forEach(mo=>{ const kM=kS+"|m:"+mo;
+        html+=`<tr class="hc" data-k="${esc(kM)}" style="cursor:pointer"><td style="padding-left:50px">${ico(kM)} ${esc(mo)}</td>${cel(porM[mo])}</tr>`;
+        if(!resumoOpen.has(kM)) return;
+        [...porM[mo]].sort((a,b)=>a.name.localeCompare(b.name,"pt-BR",{numeric:true})).forEach(m=>{
+          html+=`<tr><td style="padding-left:74px;color:#374151">${esc(m.name)} <span style="color:#6B7280">· ${esc(m.org)}</span></td><td class="num">1</td><td class="num">${fmt(1/tot*100,1)}%</td><td class="num">1</td></tr>`; });
+      });
+    });
+  });
+  const tb=$("tbodyResumo");
+  tb.innerHTML=html||`<tr><td colspan="4" class="empty">Sem dados nesta seleção.</td></tr>`;
+  tb.querySelectorAll("tr.hc").forEach(tr=>tr.onclick=()=>{ const k=tr.dataset.k;
+    if(resumoOpen.has(k)){ resumoOpen.delete(k); [...resumoOpen].forEach(x=>{ if(x.startsWith(k+"|")) resumoOpen.delete(x); }); } else resumoOpen.add(k);
+    renderResumo(); });
+}
+$("resumoCollapse").onclick=()=>{ resumoOpen.clear(); renderResumo(); };
+function renderOrgHome(d){
+  const por=agrupa(d,m=>m.org), orgs=ordKeys(por);
+  $("orgBox").style.height=Math.max(220,orgs.length*42+60)+"px";
+  mkChart("chOrgHome",{type:"bar",data:{labels:orgs,datasets:[
+      {label:"Máquinas autopropelidas",data:orgs.map(o=>por[o].filter(m=>m.grupo==="Máquina").length),backgroundColor:"#367C2B",maxBarThickness:30},
+      {label:"Implementos",data:orgs.map(o=>por[o].filter(m=>m.grupo==="Implemento").length),backgroundColor:"#FFDE00",maxBarThickness:30}]},
+    options:baseOpts({indexAxis:"y",scales:{x:{stacked:true,grid:{display:false},ticks:{precision:0}},y:{stacked:true,grid:{display:false},ticks:{font:{size:12,weight:"600"}}}},
+      plugins:{legend:{position:"top"},datalabels:{display:ctx=>ctx.dataset.data[ctx.dataIndex]>0,color:ctx=>ctx.datasetIndex===0?"#fff":"#1B4A1E",font:{size:11,weight:"700"},formatter:v=>fmt(v)}}})});
+}
+
+/* ============================== PÁGINAS DE EQUIPAMENTO ============================== */
+function buildEquipPages(){
+  Object.entries(EQUIP).forEach(([p,c])=>{
+    const porSerie=!!c.tipo;
+    $("page-"+p).innerHTML=`
+      <div class="hero-wrap"><img src="imagens/foto_${p}.jpg" onload="this.style.display='block'" alt=""><div class="hero-cap"><h2>${c.cap}</h2><span>${c.sub}</span></div></div>
+      <section class="kpis" id="kpi-${p}"></section>
+      <section class="grid">
+        <div class="card col-5"><h3>Composição por ${porSerie?"série":"tipo"} <span class="tag">frota</span></h3>
+          <div class="c-sub">Distribuição dos equipamentos ${porSerie?"por série/família (identificada pelo modelo)":"por tipo de implemento"}.</div>
+          <div class="chart-box"><canvas id="chA-${p}"></canvas></div></div>
+        <div class="card col-7"><h3>Equipamentos por modelo <span class="tag">top 15</span></h3>
+          <div class="c-sub">Quantidade por modelo na seleção atual.</div>
+          <div class="chart-box"><canvas id="chB-${p}"></canvas></div></div>
+        <div class="card col-12"><h3>Detalhamento <span class="tag" id="tag-${p}"></span></h3>
+          <div class="c-sub">Lista completa dos equipamentos. Clique no cabeçalho para ordenar.</div>
+          <div class="toolbar"><input type="text" id="search-${p}" placeholder="Buscar máquina, modelo, série ou organização…"><span class="count" id="count-${p}"></span></div>
+          <div class="table-wrap"><table><thead id="thead-${p}"></thead><tbody id="tbody-${p}"></tbody></table></div></div>
+      </section>`;
+    tableState[p]={key:"name",dir:1,q:""};
+    $("search-"+p).addEventListener("input",e=>{ tableState[p].q=e.target.value; renderEquip(p); });
+  });
+}
+function renderEquip(p){
+  const c=EQUIP[p], st=tableState[p];
+  const d=filt(ALL,{tipo:true}).filter(m=>c.tipo?m.tipo===c.tipo:m.grupo===c.grupo);
+  const chave=c.tipo?(m=>m.serie||"Outras séries"):(m=>m.tipo);
+  renderKpis("kpi-"+p,[
+    {l:"Quantidade",v:fmt(d.length),accent:true,foot:c.tipo?`ativas <b>${fmt(d.filter(m=>!m.archived).length)}</b>`:`tipos <b>${fmt(new Set(d.map(m=>m.tipo)).size)}</b>`},
+    {l:c.tipo?"Séries":"Tipos",v:fmt(new Set(d.map(chave)).size)},
+    {l:"Modelos",v:fmt(new Set(d.map(m=>m.model)).size)},
+    {l:"Organizações",v:fmt(new Set(d.map(m=>m.org)).size)},
+    {l:"Marca John Deere",v:d.length?fmt(d.filter(m=>/deere/i.test(m.make)).length/d.length*100,0)+"%":"—",foot:"do total"}
+  ]);
+  const ga=agrupa(d,chave), la=ordKeys(ga);
+  mkChart("chA-"+p,{type:"doughnut",data:{labels:la,datasets:[{data:la.map(l=>ga[l].length),backgroundColor:la.map((_,i)=>PALETTE[i%PALETTE.length]),borderColor:"#fff",borderWidth:2}]},
+    options:baseOpts({cutout:"52%",plugins:{legend:{position:"right",labels:{boxWidth:13,font:{size:11.5}}},datalabels:doughnutLabels},
+      onClick:(e,els)=>{ if(!els.length||!c.tipo) return; const v=la[els[0].index]; FILTERS.serie=FILTERS.serie[0]===v&&FILTERS.serie.length===1?[]:[v]; refreshOptions("serie"); buildMS("serie",uniq(poolPagina(),m=>m.serie||"Outras séries")); renderAll(); }})});
+  const gb=agrupa(d,m=>m.model), lb=ordKeys(gb).slice(0,15);
+  mkChart("chB-"+p,{type:"bar",data:{labels:lb,datasets:[{data:lb.map(l=>gb[l].length),backgroundColor:"#367C2B",borderColor:"#2C6323",borderWidth:1,maxBarThickness:42}]},
+    options:baseOpts({layout:{padding:{top:22}},plugins:{legend:{display:false},datalabels:barLabels},
+      scales:{y:{display:false,grid:{display:false},beginAtZero:true},x:{grid:{display:false},ticks:{maxRotation:50,minRotation:0,font:{size:11.5,weight:"600"},autoSkip:false}}}})});
+  const cols=[["name","Máquina"],[c.tipo?"serie":"tipo",c.tipo?"Série":"Tipo"],["model","Modelo"],["make","Marca"],["year","Ano"],["serial","Nº de série"],["org","Organização"],["archived","Status"]];
+  $("thead-"+p).innerHTML="<tr>"+cols.map(([k,l])=>`<th data-k="${k}">${l}${sortArrow(k,st)}</th>`).join("")+"</tr>";
+  $("thead-"+p).querySelectorAll("th").forEach(th=>th.onclick=()=>{ st.dir=st.key===th.dataset.k?-st.dir:1; st.key=th.dataset.k; renderEquip(p); });
+  const q=norm(st.q);
+  const rows=d.filter(m=>!q||norm([m.name,m.model,m.serie,m.serial,m.org,m.tipo].join(" ")).includes(q))
+    .sort((a,b)=>String(a[st.key]??"").localeCompare(String(b[st.key]??""),"pt-BR",{numeric:true})*st.dir);
+  $("count-"+p).textContent=`${fmt(rows.length)} de ${fmt(d.length)} equipamentos`;
+  $("tag-"+p).textContent=fmt(rows.length)+" itens";
+  $("tbody-"+p).innerHTML=rows.map(m=>`<tr><td><b>${esc(m.name)}</b></td><td>${esc(c.tipo?(m.serie||"—"):m.tipo)}</td><td>${esc(m.model)}</td><td>${esc(m.make||"—")}</td>
+    <td>${esc(m.year||"—")}</td><td>${esc(m.serial||"—")}</td><td>${esc(m.org)}</td><td><span class="st ${m.archived?"off":"on"}">${m.archived?"Arquivada":"Ativa"}</span></td></tr>`).join("")
+    ||`<tr><td colspan="8" class="empty">Nenhum equipamento nesta seleção.</td></tr>`;
+}
+
+/* ============================== ORGANIZAÇÕES ============================== */
+tableState.org={key:"n",dir:-1};
+$("orgSearch").addEventListener("input",()=>renderOrgs());
+function renderOrgs(){
+  const d=filt(ALL,{organizacao:true}), st=tableState.org;
+  const cnt=(a,t)=>a.filter(m=>m.tipo===t).length;
+  const por=agrupa(d,m=>m.org);
+  let orgs=Object.keys(por).map(o=>{ const a=por[o]; return {org:o,n:a.length,tr:cnt(a,"Trator"),pu:cnt(a,"Pulverizador"),co:cnt(a,"Colheitadeira"),al:cnt(a,"Colhedora de Algodão"),
+    ot:a.filter(m=>m.grupo==="Máquina").length-cnt(a,"Trator")-cnt(a,"Pulverizador")-cnt(a,"Colheitadeira")-cnt(a,"Colhedora de Algodão"),im:a.filter(m=>m.grupo==="Implemento").length}; });
+  [...orgs].sort((a,b)=>b.n-a.n).forEach((o,i)=>o.pos=i+1);
+  const maxN=Math.max(1,...orgs.map(o=>o.n));
+  renderKpis("orgKpis",[
+    {l:"Organizações",v:fmt(orgs.length),wide:true,accent:true,foot:"conectadas ao GestAG"},
+    {l:"Equipamentos",v:fmt(d.length)},
+    {l:"Média por organização",v:fmt(orgs.length?d.length/orgs.length:0,0)},
+    {l:"Maior frota",v:orgs.length?fmt(maxN):"—",foot:esc((orgs.find(o=>o.pos===1)||{}).org||"")}
+  ]);
+  const q=norm($("orgSearch").value); if(q) orgs=orgs.filter(o=>norm(o.org).includes(q));
+  if(FILTERS.organizacao.length) orgs=orgs.filter(o=>FILTERS.organizacao.includes(o.org));
+  orgs.sort((a,b)=>{ const va=a[st.key],vb=b[st.key]; return (typeof va==="number"?va-vb:String(va).localeCompare(String(vb),"pt-BR"))*st.dir; });
+  const cols=[["pos","Posição"],["org","Organização"],["n","Total"],["tr","Tratores"],["pu","Pulv."],["co","Colh."],["al","Algodão"],["ot","Outras máq."],["im","Implementos"]];
+  $("theadOrg").innerHTML="<tr>"+cols.map(([k,l])=>`<th data-k="${k}" class="${k==="org"?"":"num"}">${l}${sortArrow(k,st)}</th>`).join("")+`<th class="no-sort">Tamanho relativo</th></tr>`;
+  $("theadOrg").querySelectorAll("th[data-k]").forEach(th=>th.onclick=()=>{ st.dir=st.key===th.dataset.k?-st.dir:-1; st.key=th.dataset.k; renderOrgs(); });
+  const medal=p=>p===1?"🥇":p===2?"🥈":p===3?"🥉":p+"º";
+  $("orgCount").textContent=`${fmt(orgs.length)} organização(ões)`;
+  $("tbodyOrg").innerHTML=orgs.map(o=>`<tr><td class="medal">${medal(o.pos)}</td><td><b>${esc(o.org)}</b></td><td class="num nota">${fmt(o.n)}</td>
+    <td class="num">${fmt(o.tr)}</td><td class="num">${fmt(o.pu)}</td><td class="num">${fmt(o.co)}</td><td class="num">${fmt(o.al)}</td><td class="num">${fmt(o.ot)}</td><td class="num">${fmt(o.im)}</td>
+    <td><span class="bar"><span style="width:${o.n/maxN*100}%"></span></span></td></tr>`).join("")||`<tr><td colspan="10" class="empty">Nenhuma organização.</td></tr>`;
+  const sum=k=>orgs.reduce((a,o)=>a+o[k],0);
+  $("tfootOrg").innerHTML=orgs.length?`<tr><td></td><td>Total</td><td class="num">${fmt(sum("n"))}</td><td class="num">${fmt(sum("tr"))}</td><td class="num">${fmt(sum("pu"))}</td><td class="num">${fmt(sum("co"))}</td><td class="num">${fmt(sum("al"))}</td><td class="num">${fmt(sum("ot"))}</td><td class="num">${fmt(sum("im"))}</td><td></td></tr>`:"";
+}
+
+/* ============================== EM BREVE ============================== */
+function buildSoonPages(){
+  const S={
+    eficiencia:["◴","Eficiência Operacional",["Distribuição do tempo: Trabalhando · Transporte · Ocioso","Benchmark do filtro × média geral, por tipo de equipamento","Ranking de eficiência por máquina","Comparativo por ano"]],
+    uso:["▦","Uso das Tecnologias",["AutoTrac, Automação de Curva, AutoPath, RowSense","Sinal de Correção (RTK / SF3), Controle de Seção, Pulsante","Velocidade e Configuração de Colheita (S7 / S700), ActiveYield","Uso básico × avançado, notas e quartis por máquina"]],
+    comparacao:["⇄","Comparação entre anos",["Adoção por tecnologia ano a ano","Variação relativa (Δ%) e absoluta (Δ p.p.)","Drill-down por tipo de máquina"]]
+  };
+  Object.entries(S).forEach(([p,[ic,t,itens]])=>{
+    $("page-"+p).innerHTML=`<div class="card"><div class="soon-box"><div class="big">${ic}</div><div>
+      <h3>${t} — aguardando dados de operação</h3>
+      <p>Esta aba usa a <b>telemetria das máquinas</b> (horas e uso das tecnologias), liberada pela John Deere com o acesso de <b>Produção</b> do GestAG — solicitação já em andamento.</p>
+      <p>Assim que aprovado, a aba é preenchida automaticamente com:</p>
+      <ul>${itens.map(i=>`<li>${i}</li>`).join("")}</ul></div></div></div>`;
+  });
+}
+
 start();
 </script>
 </body>
